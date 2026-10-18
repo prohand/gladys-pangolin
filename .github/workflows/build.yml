@@ -37,6 +37,13 @@ on:
         required: true
         type: string
 
+# One build per image tag at a time: a hand-pushed tag and a manual run on the
+# same ref would otherwise race to push the same tags. A release build is keyed
+# on its version, so it never waits behind a test build of the branch.
+concurrency:
+  group: build-${{ inputs.version || github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
