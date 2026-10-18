@@ -54,8 +54,13 @@ jobs:
 
   store:
     # The store indexer's own admission checks (manifest schema, version
-    # couplings, cover, image). Pull requests only: a release commit reaches main
-    # before build.yml has pushed its image, and the check refuses a missing one.
+    # couplings, cover). Pull requests only.
+    #
+    # --skip-image-check: the image the manifest names is pushed by the Release
+    # workflow, never by a pull request — before the first release it does not
+    # exist at all (HTTP 403 on ghcr.io). The store's own CLI offers this flag
+    # for exactly that case; every other check still runs, and build.yml proves
+    # the image at release time.
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     name: Store admission checks
@@ -69,7 +74,7 @@ jobs:
           node-version: 24
 
       - name: Validate like the store indexer
-        run: npx --yes github:GladysAssistant/integration-store .
+        run: npx --yes github:GladysAssistant/integration-store --skip-image-check .
 
   docker:
     # Build the image the way build.yml does, without pushing it.

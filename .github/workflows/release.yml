@@ -30,6 +30,12 @@ on:
           - minor
           - major
 
+# One release at a time: two runs started together would both read the same
+# version from package.json, bump it to the same number and push the same tag.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 jobs:
   prepare:
     runs-on: ubuntu-latest
