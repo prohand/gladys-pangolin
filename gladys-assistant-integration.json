@@ -1,0 +1,610 @@
+{
+  "manifest_version": 1,
+  "type": "device",
+  "name": "Pangolin",
+  "description": {
+    "en": "Monitor your Pangolin sites and resources, and turn resources on or off from Gladys.",
+    "fr": "Surveillez sites et ressources Pangolin, et activez ou coupez vos ressources depuis Gladys.",
+    "de": "Überwache Pangolin-Standorte und -Ressourcen und schalte Ressourcen aus Gladys ein oder aus.",
+    "es": "Supervise sitios y recursos de Pangolin y active o desactive recursos desde Gladys."
+  },
+  "version": "0.0.0",
+  "docker_image": "ghcr.io/prohand/gladys-pangolin:0.0.0",
+  "gladys_version": ">=5.1.0",
+  "cover_image": "https://raw.githubusercontent.com/prohand/gladys-pangolin/main/cover.png",
+  "categories": ["network", "security"],
+  "transports": ["local", "cloud"],
+  "config_schema": [
+    {
+      "key": "intro",
+      "type": "section",
+      "label": {
+        "en": "Getting started",
+        "fr": "Pour commencer",
+        "de": "Erste Schritte",
+        "es": "Primeros pasos"
+      },
+      "description": {
+        "en": "Gladys reads your Pangolin organization through its Integration API: one device per site (online, traffic) and one per public resource (enabled, healthy). Create an organization API key in Pangolin (API Keys → Generate API Key) with the List Sites, List Resources, Update Resource and Get Organization permissions. A self-hosted server must have the Integration API enabled (flags: enable_integration_api: true).",
+        "fr": "Gladys lit votre organisation Pangolin via son API d'intégration : un appareil par site (en ligne, trafic) et un par ressource publique (activée, en bonne santé). Créez une clé d'API d'organisation dans Pangolin (Clés d'API → Générer une clé d'API) avec les permissions Lister les sites, Lister les ressources, Mettre à jour une ressource et Obtenir l'organisation. Un serveur auto-hébergé doit avoir l'API d'intégration activée (flags: enable_integration_api: true).",
+        "de": "Gladys liest deine Pangolin-Organisation über ihre Integrations-API: ein Gerät pro Standort (online, Datenverkehr) und eines pro öffentlicher Ressource (aktiviert, fehlerfrei). Erstelle in Pangolin einen Organisations-API-Schlüssel (API-Schlüssel → API-Schlüssel generieren) mit den Berechtigungen Standorte auflisten, Ressourcen auflisten, Ressource aktualisieren und Organisation abrufen. Ein selbst gehosteter Server muss die Integrations-API aktiviert haben (flags: enable_integration_api: true).",
+        "es": "Gladys lee su organización Pangolin a través de su API de integración: un dispositivo por sitio (en línea, tráfico) y uno por recurso público (activado, en buen estado). Cree una clave de API de organización en Pangolin (Claves API → Generar clave API) con los permisos Listar sitios, Listar recursos, Actualizar Recurso y Obtener organización. Un servidor autoalojado debe tener activada la API de integración (flags: enable_integration_api: true)."
+      },
+      "links": [
+        {
+          "url": "https://docs.pangolin.net/manage/integration-api",
+          "label": {
+            "en": "Pangolin Integration API",
+            "fr": "API d'intégration Pangolin",
+            "de": "Pangolin-Integrations-API",
+            "es": "API de integración de Pangolin"
+          }
+        },
+        {
+          "url": "https://github.com/prohand/gladys-pangolin/blob/main/docs/en.md",
+          "label": {
+            "en": "Integration documentation",
+            "fr": "Documentation de l'intégration",
+            "de": "Dokumentation der Integration",
+            "es": "Documentación de la integración"
+          }
+        }
+      ]
+    },
+    {
+      "key": "local_url",
+      "type": "string",
+      "label": {
+        "en": "Local API address",
+        "fr": "Adresse locale de l'API",
+        "de": "Lokale API-Adresse",
+        "es": "Dirección local de la API"
+      },
+      "description": {
+        "en": "The Integration API of a self-hosted Pangolin, reached on your network (the Pangolin container listens on port 3003 or 3004 depending on the version). Leave empty if you only use the Internet address.",
+        "fr": "L'API d'intégration d'un Pangolin auto-hébergé, jointe sur votre réseau (le conteneur Pangolin écoute sur le port 3003 ou 3004 selon la version). Laissez vide si vous n'utilisez que l'adresse Internet.",
+        "de": "Die Integrations-API eines selbst gehosteten Pangolin, in deinem Netzwerk erreichbar (der Pangolin-Container lauscht je nach Version auf Port 3003 oder 3004). Leer lassen, wenn du nur die Internetadresse verwendest.",
+        "es": "La API de integración de un Pangolin autoalojado, accesible en su red (el contenedor de Pangolin escucha en el puerto 3003 o 3004 según la versión). Déjelo vacío si solo usa la dirección de Internet."
+      },
+      "placeholder": {
+        "en": "http://192.168.1.10:3004/v1",
+        "fr": "http://192.168.1.10:3004/v1",
+        "de": "http://192.168.1.10:3004/v1",
+        "es": "http://192.168.1.10:3004/v1"
+      },
+      "required": false
+    },
+    {
+      "key": "cloud_url",
+      "type": "string",
+      "label": {
+        "en": "Internet API address",
+        "fr": "Adresse Internet de l'API",
+        "de": "Internet-API-Adresse",
+        "es": "Dirección de Internet de la API"
+      },
+      "description": {
+        "en": "Pangolin Cloud: https://api.pangolin.net/v1. Self-hosted: the public address of your Integration API, e.g. https://api.example.com/v1. With both addresses filled in, the \"Prefer the local connection\" switch picks the one tried first; the other one takes over when it does not answer.",
+        "fr": "Pangolin Cloud : https://api.pangolin.net/v1. Auto-hébergé : l'adresse publique de votre API d'intégration, par exemple https://api.example.com/v1. Avec les deux adresses, l'interrupteur « Préférer la connexion locale » choisit celle essayée en premier ; l'autre prend le relais quand elle ne répond pas.",
+        "de": "Pangolin Cloud: https://api.pangolin.net/v1. Selbst gehostet: die öffentliche Adresse deiner Integrations-API, z. B. https://api.example.com/v1. Sind beide Adressen eingetragen, wählt der Schalter „Lokale Verbindung bevorzugen“ die zuerst versuchte; die andere springt ein, wenn sie nicht antwortet.",
+        "es": "Pangolin Cloud: https://api.pangolin.net/v1. Autoalojado: la dirección pública de su API de integración, p. ej. https://api.example.com/v1. Con las dos direcciones, el interruptor «Preferir la conexión local» elige la que se prueba primero; la otra toma el relevo cuando no responde."
+      },
+      "placeholder": {
+        "en": "https://api.pangolin.net/v1",
+        "fr": "https://api.pangolin.net/v1",
+        "de": "https://api.pangolin.net/v1",
+        "es": "https://api.pangolin.net/v1"
+      },
+      "required": false
+    },
+    {
+      "key": "api_key",
+      "type": "secret",
+      "label": {
+        "en": "API key",
+        "fr": "Clé d'API",
+        "de": "API-Schlüssel",
+        "es": "Clave de API"
+      },
+      "description": {
+        "en": "The organization API key, as Pangolin shows it once when you create it (it reads id.secret).",
+        "fr": "La clé d'API de l'organisation, telle que Pangolin l'affiche une seule fois à sa création (elle s'écrit id.secret).",
+        "de": "Der API-Schlüssel der Organisation, so wie Pangolin ihn einmalig bei der Erstellung anzeigt (Form: id.secret).",
+        "es": "La clave de API de la organización, tal como Pangolin la muestra una sola vez al crearla (tiene la forma id.secret)."
+      },
+      "required": true
+    },
+    {
+      "key": "org_id",
+      "type": "string",
+      "label": {
+        "en": "Organization ID",
+        "fr": "ID de l'organisation",
+        "de": "Organisations-ID",
+        "es": "ID de la organización"
+      },
+      "description": {
+        "en": "The ID of the organization, as in the Pangolin address bar: /my-org/settings → my-org.",
+        "fr": "L'ID de l'organisation, comme dans la barre d'adresse de Pangolin : /mon-org/settings → mon-org.",
+        "de": "Die ID der Organisation, wie in der Adressleiste von Pangolin: /meine-org/settings → meine-org.",
+        "es": "El ID de la organización, como en la barra de direcciones de Pangolin: /mi-org/settings → mi-org."
+      },
+      "placeholder": {
+        "en": "my-org",
+        "fr": "mon-org",
+        "de": "meine-org",
+        "es": "mi-org"
+      },
+      "required": true
+    },
+    {
+      "key": "poll_frequency",
+      "type": "number",
+      "label": {
+        "en": "Refresh interval (s)",
+        "fr": "Intervalle de rafraîchissement (s)",
+        "de": "Aktualisierungsintervall (s)",
+        "es": "Intervalo de actualización (s)"
+      },
+      "description": {
+        "en": "How often Pangolin is read, in seconds. Each read is two requests, whatever the number of devices.",
+        "fr": "Fréquence de lecture de Pangolin, en secondes. Chaque lecture fait deux requêtes, quel que soit le nombre d'appareils.",
+        "de": "Wie oft Pangolin gelesen wird, in Sekunden. Jede Abfrage sind zwei Anfragen, unabhängig von der Anzahl der Geräte.",
+        "es": "Frecuencia de lectura de Pangolin, en segundos. Cada lectura son dos peticiones, sea cual sea el número de dispositivos."
+      },
+      "required": false,
+      "default": 60,
+      "min": 30,
+      "max": 3600
+    }
+  ],
+  "actions": [
+    {
+      "key": "test_connection",
+      "label": {
+        "en": "Test the connection",
+        "fr": "Tester la connexion",
+        "de": "Verbindung testen",
+        "es": "Probar la conexión"
+      },
+      "timeout_seconds": 45
+    }
+  ],
+  "scene_triggers": [
+    {
+      "key": "site_status_changed",
+      "label": {
+        "en": "A Pangolin site goes online or offline",
+        "fr": "Un site Pangolin passe en ligne ou hors ligne",
+        "de": "Ein Pangolin-Standort geht online oder offline",
+        "es": "Un sitio Pangolin se conecta o desconecta"
+      },
+      "description": {
+        "en": "The tunnel of a site went down, or came back up.",
+        "fr": "Le tunnel d'un site est tombé, ou est revenu.",
+        "de": "Der Tunnel eines Standorts ist ausgefallen oder wieder da.",
+        "es": "El túnel de un sitio se ha caído, o ha vuelto."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Site",
+            "fr": "Site",
+            "de": "Standort",
+            "es": "Sitio"
+          },
+          "required": false
+        },
+        {
+          "key": "status",
+          "type": "multi_select",
+          "label": {
+            "en": "New status",
+            "fr": "Nouvel état",
+            "de": "Neuer Status",
+            "es": "Nuevo estado"
+          },
+          "options": [
+            {
+              "value": "online",
+              "label": {
+                "en": "Online",
+                "fr": "En ligne",
+                "de": "Online",
+                "es": "En línea"
+              }
+            },
+            {
+              "value": "offline",
+              "label": {
+                "en": "Offline",
+                "fr": "Hors ligne",
+                "de": "Offline",
+                "es": "Sin conexión"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "site_name",
+          "type": "string",
+          "label": {
+            "en": "Site name",
+            "fr": "Nom du site",
+            "de": "Name des Standorts",
+            "es": "Nombre del sitio"
+          }
+        },
+        {
+          "key": "status",
+          "type": "string",
+          "label": {
+            "en": "New status",
+            "fr": "Nouvel état",
+            "de": "Neuer Status",
+            "es": "Nuevo estado"
+          }
+        }
+      ]
+    },
+    {
+      "key": "resource_health_changed",
+      "label": {
+        "en": "The health of a Pangolin resource changes",
+        "fr": "La santé d'une ressource Pangolin change",
+        "de": "Der Zustand einer Pangolin-Ressource ändert sich",
+        "es": "Cambia el estado de un recurso de Pangolin"
+      },
+      "description": {
+        "en": "The health checks of a public resource's targets changed result.",
+        "fr": "Les contrôles de santé des cibles d'une ressource publique ont changé de résultat.",
+        "de": "Die Zustandsprüfungen der Ziele einer öffentlichen Ressource haben ein anderes Ergebnis.",
+        "es": "Las comprobaciones de estado de los destinos de un recurso público han cambiado de resultado."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Resource",
+            "fr": "Ressource",
+            "de": "Ressource",
+            "es": "Recurso"
+          },
+          "required": false
+        },
+        {
+          "key": "health",
+          "type": "multi_select",
+          "label": {
+            "en": "New health",
+            "fr": "Nouvel état de santé",
+            "de": "Neuer Zustand",
+            "es": "Nuevo estado"
+          },
+          "options": [
+            {
+              "value": "healthy",
+              "label": {
+                "en": "Healthy",
+                "fr": "En bonne santé",
+                "de": "Fehlerfrei",
+                "es": "En buen estado"
+              }
+            },
+            {
+              "value": "unhealthy",
+              "label": {
+                "en": "Unhealthy",
+                "fr": "En défaut",
+                "de": "Gestört",
+                "es": "Con fallos"
+              }
+            },
+            {
+              "value": "unknown",
+              "label": {
+                "en": "Unknown",
+                "fr": "Inconnu",
+                "de": "Unbekannt",
+                "es": "Desconocido"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "resource_name",
+          "type": "string",
+          "label": {
+            "en": "Resource name",
+            "fr": "Nom de la ressource",
+            "de": "Name der Ressource",
+            "es": "Nombre del recurso"
+          }
+        },
+        {
+          "key": "address",
+          "type": "string",
+          "label": {
+            "en": "Domain or port",
+            "fr": "Domaine ou port",
+            "de": "Domain oder Port",
+            "es": "Dominio o puerto"
+          }
+        },
+        {
+          "key": "health",
+          "type": "string",
+          "label": {
+            "en": "New health",
+            "fr": "Nouvel état de santé",
+            "de": "Neuer Zustand",
+            "es": "Nuevo estado"
+          }
+        },
+        {
+          "key": "previous_health",
+          "type": "string",
+          "label": {
+            "en": "Previous health",
+            "fr": "État de santé précédent",
+            "de": "Vorheriger Zustand",
+            "es": "Estado anterior"
+          }
+        }
+      ]
+    },
+    {
+      "key": "connection_changed",
+      "label": {
+        "en": "Pangolin stops or starts answering",
+        "fr": "Pangolin cesse ou recommence de répondre",
+        "de": "Pangolin antwortet nicht mehr oder wieder",
+        "es": "Pangolin deja de responder o vuelve a hacerlo"
+      },
+      "description": {
+        "en": "Gladys lost, or found again, the Pangolin Integration API.",
+        "fr": "Gladys a perdu, ou retrouvé, l'API d'intégration Pangolin.",
+        "de": "Gladys hat die Pangolin-Integrations-API verloren oder wiedergefunden.",
+        "es": "Gladys ha perdido, o recuperado, la API de integración de Pangolin."
+      },
+      "fields": [
+        {
+          "key": "status",
+          "type": "multi_select",
+          "label": {
+            "en": "New status",
+            "fr": "Nouvel état",
+            "de": "Neuer Status",
+            "es": "Nuevo estado"
+          },
+          "options": [
+            {
+              "value": "connected",
+              "label": {
+                "en": "Answering",
+                "fr": "Répond",
+                "de": "Antwortet",
+                "es": "Responde"
+              }
+            },
+            {
+              "value": "disconnected",
+              "label": {
+                "en": "Not answering",
+                "fr": "Ne répond plus",
+                "de": "Antwortet nicht",
+                "es": "No responde"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "status",
+          "type": "string",
+          "label": {
+            "en": "New status",
+            "fr": "Nouvel état",
+            "de": "Neuer Status",
+            "es": "Nuevo estado"
+          }
+        },
+        {
+          "key": "reason",
+          "type": "string",
+          "label": {
+            "en": "Reason",
+            "fr": "Raison",
+            "de": "Grund",
+            "es": "Motivo"
+          }
+        },
+        {
+          "key": "organization",
+          "type": "string",
+          "label": {
+            "en": "Organization",
+            "fr": "Organisation",
+            "de": "Organisation",
+            "es": "Organización"
+          }
+        }
+      ]
+    }
+  ],
+  "scene_actions": [
+    {
+      "key": "set_resource_enabled",
+      "label": {
+        "en": "Enable or disable a Pangolin resource",
+        "fr": "Activer ou désactiver une ressource Pangolin",
+        "de": "Pangolin-Ressource aktivieren oder deaktivieren",
+        "es": "Activar o desactivar un recurso de Pangolin"
+      },
+      "description": {
+        "en": "Open or close a public resource, e.g. disable remote access while you are home.",
+        "fr": "Ouvre ou ferme une ressource publique, par exemple couper un accès distant quand vous êtes là.",
+        "de": "Öffnet oder schließt eine öffentliche Ressource, z. B. den Fernzugriff abschalten, wenn du zu Hause bist.",
+        "es": "Abre o cierra un recurso público, p. ej. cortar un acceso remoto cuando está en casa."
+      },
+      "timeout_seconds": 30,
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Resource",
+            "fr": "Ressource",
+            "de": "Ressource",
+            "es": "Recurso"
+          },
+          "required": true
+        },
+        {
+          "key": "enabled",
+          "type": "boolean",
+          "label": {
+            "en": "Enabled",
+            "fr": "Activée",
+            "de": "Aktiviert",
+            "es": "Activado"
+          },
+          "required": false,
+          "default": true
+        }
+      ],
+      "outputs": [
+        {
+          "key": "enabled",
+          "type": "boolean",
+          "label": {
+            "en": "Resource enabled",
+            "fr": "Ressource activée",
+            "de": "Ressource aktiviert",
+            "es": "Recurso activado"
+          }
+        }
+      ]
+    },
+    {
+      "key": "refresh_status",
+      "label": {
+        "en": "Refresh Pangolin now",
+        "fr": "Actualiser Pangolin maintenant",
+        "de": "Pangolin jetzt aktualisieren",
+        "es": "Actualizar Pangolin ahora"
+      },
+      "description": {
+        "en": "Read the sites and resources now, and give their counts to the next actions.",
+        "fr": "Lit maintenant les sites et ressources, et donne leurs comptes aux actions suivantes.",
+        "de": "Liest Standorte und Ressourcen jetzt und gibt ihre Anzahl an die nächsten Aktionen weiter.",
+        "es": "Lee ahora los sitios y recursos, y pasa sus recuentos a las acciones siguientes."
+      },
+      "timeout_seconds": 45,
+      "outputs": [
+        {
+          "key": "connected",
+          "type": "boolean",
+          "label": {
+            "en": "Pangolin answered",
+            "fr": "Pangolin a répondu",
+            "de": "Pangolin hat geantwortet",
+            "es": "Pangolin respondió"
+          }
+        },
+        {
+          "key": "sites_online",
+          "type": "number",
+          "label": {
+            "en": "Sites online",
+            "fr": "Sites en ligne",
+            "de": "Standorte online",
+            "es": "Sitios en línea"
+          }
+        },
+        {
+          "key": "sites_offline",
+          "type": "number",
+          "label": {
+            "en": "Sites offline",
+            "fr": "Sites hors ligne",
+            "de": "Standorte offline",
+            "es": "Sitios sin conexión"
+          }
+        },
+        {
+          "key": "resources_unhealthy",
+          "type": "number",
+          "label": {
+            "en": "Unhealthy resources",
+            "fr": "Ressources en défaut",
+            "de": "Gestörte Ressourcen",
+            "es": "Recursos con fallos"
+          }
+        },
+        {
+          "key": "resources_disabled",
+          "type": "number",
+          "label": {
+            "en": "Disabled resources",
+            "fr": "Ressources désactivées",
+            "de": "Deaktivierte Ressourcen",
+            "es": "Recursos desactivados"
+          }
+        }
+      ]
+    }
+  ],
+  "widgets": [
+    {
+      "key": "pangolin_overview",
+      "label": {
+        "en": "Pangolin overview",
+        "fr": "Aperçu Pangolin",
+        "de": "Pangolin-Übersicht",
+        "es": "Resumen de Pangolin"
+      },
+      "description": {
+        "en": "Connection, sites online, resources enabled and the problems to look at.",
+        "fr": "Connexion, sites en ligne, ressources actives et problèmes à regarder.",
+        "de": "Verbindung, Standorte online, aktive Ressourcen und die Probleme, die Aufmerksamkeit brauchen.",
+        "es": "Conexión, sitios en línea, recursos activos y los problemas a revisar."
+      },
+      "icon": "shield",
+      "settings": [
+        {
+          "key": "problems_shown",
+          "type": "number",
+          "label": {
+            "en": "Problems listed",
+            "fr": "Problèmes listés",
+            "de": "Aufgelistete Probleme",
+            "es": "Problemas listados"
+          },
+          "description": {
+            "en": "How many offline sites and faulty resources are named (0 to 9).",
+            "fr": "Nombre de sites hors ligne et de ressources en défaut nommés (0 à 9).",
+            "de": "Wie viele Offline-Standorte und gestörte Ressourcen genannt werden (0 bis 9).",
+            "es": "Cuántos sitios sin conexión y recursos con fallos se nombran (0 a 9)."
+          },
+          "required": false,
+          "default": 5,
+          "min": 0,
+          "max": 9
+        }
+      ],
+      "action_timeout_seconds": 45
+    }
+  ]
+}

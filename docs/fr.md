@@ -1,0 +1,182 @@
+# Pangolin
+
+Cette intégration relie Gladys à [Pangolin](https://pangolin.net), le reverse
+proxy à tunnels qui expose vos services sur Internet sans ouvrir de port sur
+votre box. Elle fonctionne avec un Pangolin **auto-hébergé** comme avec
+**Pangolin Cloud**.
+
+Ce que vous obtenez dans Gladys :
+
+- un appareil par **site** (un tunnel Newt, un site WireGuard, l'hôte Pangolin
+  lui-même), avec son état **en ligne** et son trafic (**données entrantes**,
+  **données sortantes**) ;
+- un appareil par **ressource publique** (un site HTTPS sur votre domaine, un
+  port TCP/UDP brut), avec un interrupteur **activée** que vous pouvez couper
+  depuis Gladys et son état de **santé** ;
+- des déclencheurs et des actions de scène, et un widget de tableau de bord
+  (Gladys 5.1 ou plus récent).
+
+## Avant de commencer
+
+### 1. Activer l'API d'intégration (auto-hébergé uniquement)
+
+Pangolin Cloud l'a déjà. Sur un Pangolin auto-hébergé (Community Edition),
+l'API d'intégration est désactivée par défaut : ajoutez ceci dans
+`config/config.yml`, puis redémarrez Pangolin.
+
+```yaml
+flags:
+  enable_integration_api: true
+```
+
+L'API écoute alors dans le conteneur Pangolin sur le port **3003** (ou
+**3004**, selon la version : regardez `server.integration_port` dans votre
+configuration). Voir la
+[documentation Pangolin](https://docs.pangolin.net/manage/integration-api) pour
+la publier sur un domaine comme `https://api.example.com/v1`.
+
+### 2. Créer une clé d'API
+
+Dans Pangolin, ouvrez votre organisation, puis **Clés d'API → Générer une clé
+d'API**. Donnez-lui ces permissions :
+
+| Permission                  | Sert à                                                     |
+| --------------------------- | ---------------------------------------------------------- |
+| Lister les sites            | les appareils site                                         |
+| Lister les ressources       | les appareils ressource                                    |
+| Obtenir l'organisation      | le nom affiché par « Tester la connexion » (facultatif)    |
+| Mettre à jour une ressource | activer ou couper une ressource depuis Gladys (facultatif) |
+
+Copiez la clé tout de suite : Pangolin ne l'affiche qu'une fois. Elle ressemble
+à `abc123xyz.0123456789abcdef`.
+
+Utilisez une clé **d'organisation** dédiée à Gladys, jamais une clé root.
+
+### 3. Trouver l'ID de l'organisation
+
+Il est dans la barre d'adresse quand vous parcourez votre organisation dans
+Pangolin : `https://pangolin.example.com/mon-org/settings` → `mon-org`.
+
+## Configuration
+
+| Champ                                  | Quoi mettre                                                                                                                            |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| **Adresse locale de l'API**            | Auto-hébergé uniquement : l'API d'intégration sur votre réseau, par exemple `http://192.168.1.10:3004/v1`. Sinon, laissez vide.        |
+| **Adresse Internet de l'API**          | Pangolin Cloud : `https://api.pangolin.net/v1`. Auto-hébergé : son adresse publique, par exemple `https://api.example.com/v1`.         |
+| **Clé d'API**                          | La clé créée plus haut.                                                                                                                |
+| **ID de l'organisation**               | L'ID trouvé plus haut.                                                                                                                 |
+| **Intervalle de rafraîchissement (s)** | Fréquence de lecture de Pangolin (30 à 3600 s, 60 par défaut). Chaque lecture fait deux requêtes, quel que soit le nombre d'appareils. |
+
+Renseignez au moins une des deux adresses. `/v1` est ajouté si vous l'oubliez.
+
+Appuyez ensuite sur **Tester la connexion** : il essaie chaque adresse
+renseignée et dit, pour chacune, ce que Pangolin a répondu — l'organisation, le
+nombre de sites et de ressources, ou la raison de l'échec.
+
+### Local ou Internet : l'interrupteur « Préférer la connexion locale »
+
+Avec les deux adresses, Gladys appelle celle que désigne l'interrupteur
+**Préférer la connexion locale**, et ne se rabat sur l'autre que si la première
+**ne répond pas** (réseau coupé, délai dépassé, un proxy qui répond 502, 503 ou
+504). Une mauvaise clé ou une organisation inconnue ne fait pas basculer : les
+deux adresses mènent au même serveur, et la réponse serait la même.
+
+Chaque appareil affiche l'adresse utilisée sur son badge : **local**,
+**cloud** ou **injoignable**. Un point orange signifie que Gladys passe par
+l'adresse de secours : ça marche, mais pas comme vous l'avez demandé — vérifiez
+l'adresse préférée.
+
+Avec une seule adresse, pas de secours : le badge montre cette adresse, ou
+injoignable.
+
+## Appareils
+
+Ouvrez l'onglet **Découvrir** de l'intégration : chaque site et chaque
+ressource publique de l'organisation y est listé. Créez dans Gladys ceux que
+vous voulez.
+
+### Site
+
+| Fonctionnalité | Valeurs                            | Remarques                                                        |
+| -------------- | ---------------------------------- | ---------------------------------------------------------------- |
+| Online         | 1 = tunnel actif, 0 = tunnel coupé | Absente sur un site « local » : Pangolin ne donne pas d'état     |
+| Data in        | mégaoctets                         | Compteur tenu par Pangolin, jusqu'à ce que vous le remettiez à 0 |
+| Data out       | mégaoctets                         | Idem                                                             |
+
+### Ressource publique
+
+| Fonctionnalité | Valeurs                           | Remarques                                                                                           |
+| -------------- | --------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Enabled        | 1 = servie, 0 = désactivée        | **Pilotable** : la couper fait que Pangolin ne sert plus la ressource, sans la supprimer            |
+| Healthy        | 1 = en bonne santé, 0 = en défaut | Résultat des contrôles de santé de ses cibles. Vide quand la ressource n'a pas de contrôle de santé |
+
+Les ressources privées (celles qu'on joint via un client Pangolin) ne sont pas
+couvertes.
+
+Les appareils gardent leur identité quand vous renommez un site ou une
+ressource dans Pangolin : ils sont liés aux numéros internes de Pangolin, pas
+aux noms ni aux domaines. Un site ou une ressource supprimé dans Pangolin
+apparaît **injoignable** : vous pouvez supprimer l'appareil dans Gladys.
+
+## Scènes et tableau de bord (Gladys 5.1)
+
+### Déclencheurs
+
+| Déclencheur                                       | Filtres                                   | Variables                                               |
+| ------------------------------------------------- | ----------------------------------------- | ------------------------------------------------------- |
+| **Un site Pangolin passe en ligne ou hors ligne** | site, nouvel état (en ligne / hors ligne) | `site_name`, `status`                                   |
+| **La santé d'une ressource Pangolin change**      | ressource, nouvel état de santé           | `resource_name`, `address`, `health`, `previous_health` |
+| **Pangolin cesse ou recommence de répondre**      | nouvel état (répond / ne répond plus)     | `status`, `reason`, `organization`                      |
+
+Ils se déclenchent **une fois par changement**, à la lecture qui le voit —
+donc dans l'intervalle de rafraîchissement. Rien ne se déclenche au démarrage
+ni après un changement de configuration : « le site est hors ligne » à ce
+moment-là est un état, pas un événement. Les déclencheurs marchent même pour
+les sites et ressources que vous n'avez pas créés comme appareils.
+
+Dans une scène, utilisez les variables comme les autres, par exemple
+`{{triggerEvent.data.site_name}} est {{triggerEvent.data.status}}`.
+
+### Actions
+
+| Action                                           | Champs             | Sorties                                                                                   |
+| ------------------------------------------------ | ------------------ | ----------------------------------------------------------------------------------------- |
+| **Activer ou désactiver une ressource Pangolin** | ressource, activée | `enabled`                                                                                 |
+| **Actualiser Pangolin maintenant**               | —                  | `connected`, `sites_online`, `sites_offline`, `resources_unhealthy`, `resources_disabled` |
+
+Exemple : quand tout le monde quitte la maison, activer la ressource
+« Caméras » ; quand la première personne rentre, la couper.
+
+### Widget « Aperçu Pangolin »
+
+Ajoutez-le depuis l'éditeur du tableau de bord. Il affiche :
+
+- trois tuiles : sites en ligne, ressources actives, ressources en défaut ;
+- la connexion (locale, Internet, orange sur l'adresse de secours, rouge quand
+  Pangolin ne répond pas) ;
+- les problèmes, les plus graves d'abord : sites hors ligne, ressources en
+  défaut, ressources désactivées — autant que le réglage **Problèmes listés**
+  l'indique (0 à 9) ;
+- un bouton **Actualiser**.
+
+## Dépannage
+
+| Message                                             | Que faire                                                                                                                        |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| _Pangolin ne répond pas (…)_                        | Vérifiez l'adresse et le port, et que l'API d'intégration est activée. La raison (ECONNREFUSED, délai dépassé…) aide.            |
+| _Pangolin a refusé la clé d'API_                    | La clé est fausse ou a été supprimée : créez-en une nouvelle.                                                                    |
+| _La clé d'API n'a pas accès à l'organisation « … »_ | La clé appartient à une autre organisation, ou il lui manque une permission : voir [Créer une clé d'API](#2-créer-une-clé-dapi). |
+| _Pangolin ne connaît pas d'organisation « … »_      | Vérifiez l'ID de l'organisation, et que l'adresse est celle de l'API (finissant par `/v1`), pas celle du tableau de bord.        |
+| Une ressource ne se coupe pas                       | Il manque à la clé la permission **Mettre à jour une ressource**.                                                                |
+
+Les journaux de l'intégration nomment chaque lecture ratée et chaque bascule
+vers l'adresse de secours. La clé d'API n'y apparaît jamais.
+
+## Sécurité
+
+- La clé d'API est stockée dans un champ secret, envoyée uniquement aux
+  adresses que vous avez configurées, et jamais journalisée.
+- Toute personne qui peut actionner un interrupteur ou lancer une scène dans
+  Gladys peut ouvrir ou fermer vos ressources publiques : pensez-y quand vous
+  partagez Gladys.
+- Pour l'adresse Internet, utilisez `https://`.
