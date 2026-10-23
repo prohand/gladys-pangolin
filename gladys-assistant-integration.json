@@ -8,8 +8,8 @@
     "de": "Überwache Pangolin-Standorte und -Ressourcen und schalte Ressourcen aus Gladys ein oder aus.",
     "es": "Supervise sitios y recursos de Pangolin y active o desactive recursos desde Gladys."
   },
-  "version": "0.0.1",
-  "docker_image": "ghcr.io/prohand/gladys-pangolin:0.0.1",
+  "version": "0.0.2",
+  "docker_image": "ghcr.io/prohand/gladys-pangolin:0.0.2",
   "gladys_version": ">=5.1.0",
   "cover_image": "https://raw.githubusercontent.com/prohand/gladys-pangolin/main/cover.png",
   "categories": ["network", "security"],
