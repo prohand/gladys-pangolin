@@ -1,6 +1,6 @@
 {
   "name": "gladys-pangolin",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "private": true,
   "description": "Gladys Assistant external integration for Pangolin, the tunneled reverse proxy (self-hosted or Pangolin Cloud).",
   "type": "module",

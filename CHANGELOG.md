@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-10-25
+
 ### Added
 
 - Store catalog: the integration now also sits on the new "servers" shelf, and declares search
@@ -46,6 +48,7 @@ the notes of the version's GitHub Release.
 - CI (format, lint, tests on Node 22 and 24, store checks, Docker build), Release and
   GitHub releases workflows, Dependabot, `SECURITY.md` and `CLAUDE.md`.
 
-[Unreleased]: https://github.com/prohand/gladys-pangolin/compare/v0.0.2...HEAD
+[Unreleased]: https://github.com/prohand/gladys-pangolin/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/prohand/gladys-pangolin/compare/v0.0.2...v0.1.0
 [0.0.2]: https://github.com/prohand/gladys-pangolin/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/prohand/gladys-pangolin/releases/tag/v0.0.1
