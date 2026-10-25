@@ -12,6 +12,8 @@ and the SDK
 User documentation: [English](./docs/en.md) · [Français](./docs/fr.md) · [Deutsch](./docs/de.md) ·
 [Español](./docs/es.md).
 
+Requires Gladys 5.3.0 or later (manifest `gladys_version: ">=5.3.0"`).
+
 ## What it does
 
 | Gladys device               | Features                                        |

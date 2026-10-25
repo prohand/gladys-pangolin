@@ -16,6 +16,8 @@ Was du in Gladys bekommst:
 - Szenen-Auslöser, Szenen-Aktionen und ein Dashboard-Widget (Gladys 5.1 oder
   neuer).
 
+Erfordert **Gladys 5.3.0** oder neuer.
+
 ## Bevor du beginnst
 
 ### 1. Die Integrations-API aktivieren (nur selbst gehostet)

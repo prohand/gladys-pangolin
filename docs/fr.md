@@ -16,6 +16,8 @@ Ce que vous obtenez dans Gladys :
 - des déclencheurs et des actions de scène, et un widget de tableau de bord
   (Gladys 5.1 ou plus récent).
 
+Nécessite **Gladys 5.3.0** ou plus récent.
+
 ## Avant de commencer
 
 ### 1. Activer l'API d'intégration (auto-hébergé uniquement)

@@ -16,6 +16,8 @@ Lo que obtiene en Gladys:
 - disparadores y acciones de escena, y un widget del panel (Gladys 5.1 o
   posterior).
 
+Requiere **Gladys 5.3.0** o posterior.
+
 ## Antes de empezar
 
 ### 1. Activar la API de integración (solo autoalojado)
