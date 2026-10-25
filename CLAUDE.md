@@ -76,7 +76,7 @@ test/helpers/fakePangolin.js  in-memory Integration API behind an injected fetch
 - **Manifest.** Every text is `{ en, fr, de, es }` (`test/manifest.test.js` walks the whole
   file). The catalog `description` holds 10 to 100 characters per language. Trigger, action,
   widget, setting and config keys are stored by users: never rename them. `gladys_version`
-  stays `>=5.1.0` (scene and widget fields). Change the manifest and the handlers together.
+  stays `>=5.3.0` (scene and widget fields need 5.1.0, `keywords` 5.3.0). Change the manifest and the handlers together.
 - **User-facing text** is `{ en, fr, de, es }` (built with `src/i18n.js`); user docs in
   `docs/en.md`, `docs/fr.md`, `docs/de.md`, `docs/es.md`, kept in sync. German uses Pangolin's
   own word for a site: "Standort".

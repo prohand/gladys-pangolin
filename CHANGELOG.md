@@ -10,6 +10,16 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+### Added
+
+- Store catalog: the integration now also sits on the new "servers" shelf, and declares search
+  keywords (reverse proxy, tunnel, WireGuard, Newt…).
+
+### Changed
+
+- Gladys 5.3.0 or later is now required (store keywords).
+- SDK `@gladysassistant/integration-sdk` 0.16.
+
 ## [0.0.2] - 2026-10-23
 
 - Maintenance release, no functional change.

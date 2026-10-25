@@ -69,6 +69,56 @@ test('categories, scene triggers, scene actions and widgets require Gladys >= 5.
   assert.ok(isAtLeast(minGladysVersion(), [5, 1, 0]), `got "${manifest.gladys_version}"`);
 });
 
+// The store's catalog shelves (integration-catalog-categories.md), with the four
+// added in 2026-10. An unknown key is only dropped with a warning, so a typo
+// would silently cost the integration a shelf.
+const CATALOG_CATEGORIES = [
+  'climate',
+  'lighting',
+  'energy',
+  'security',
+  'multimedia',
+  'appliances',
+  'environment',
+  'protocols',
+  'network',
+  'notifications',
+  'assistants',
+  'services',
+  'transport',
+  'vehicles',
+  'servers',
+  'leisure',
+];
+
+test('categories are 1 to 3 unique keys of the store vocabulary, servers first', () => {
+  assert.equal(new Set(manifest.categories).size, manifest.categories.length);
+  for (const category of manifest.categories) {
+    assert.ok(CATALOG_CATEGORIES.includes(category), `unknown category "${category}"`);
+  }
+  assert.equal(manifest.categories[0], 'servers');
+});
+
+test('keywords are 1 to 10 unique search terms of 2 to 30 characters', () => {
+  assert.ok(Array.isArray(manifest.keywords));
+  assert.ok(manifest.keywords.length >= 1 && manifest.keywords.length <= 10);
+  const normalized = manifest.keywords.map((keyword) => keyword.trim().toLowerCase());
+  assert.equal(new Set(normalized).size, normalized.length, 'keywords must be unique');
+  for (const keyword of normalized) {
+    assert.ok(keyword.length >= 2 && keyword.length <= 30, `keyword "${keyword}"`);
+  }
+});
+
+test('Pangolin is used worldwide: no countries restriction', () => {
+  assert.equal(manifest.countries, undefined);
+});
+
+test('keywords, countries and music require Gladys >= 5.3.0', () => {
+  const declared = ['keywords', 'countries', 'music'].filter((f) => manifest[f] !== undefined);
+  assert.ok(declared.length > 0);
+  assert.ok(isAtLeast(minGladysVersion(), [5, 3, 0]), `got "${manifest.gladys_version}"`);
+});
+
 test('every scene_actions key has a handler, and vice versa', () => {
   assert.deepEqual(keysOf(manifest.scene_actions).sort(), Object.keys(SCENE_ACTIONS).sort());
 });

@@ -15,6 +15,8 @@ What you get in Gladys:
   **healthy** state;
 - scene triggers, scene actions and a dashboard widget (Gladys 5.1 or later).
 
+Requires **Gladys 5.3.0** or later.
+
 ## Before you start
 
 ### 1. Enable the Integration API (self-hosted only)
